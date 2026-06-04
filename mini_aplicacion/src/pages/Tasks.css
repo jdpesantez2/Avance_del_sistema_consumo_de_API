@@ -1,0 +1,23 @@
+.tasks-page {
+  max-width: 750px;
+  margin: 0 auto;
+  padding: 2.5rem 1.5rem;
+}
+
+.tasks-header {
+  margin-bottom: 2rem;
+}
+
+.page-title {
+  font-family: 'Playfair Display', serif;
+  font-size: 2rem;
+  font-weight: 700;
+  color: var(--text-primary);
+  letter-spacing: -0.02em;
+  margin-bottom: 0.4rem;
+}
+
+.page-subtitle {
+  color: var(--text-muted);
+  font-size: 0.95rem;
+}
