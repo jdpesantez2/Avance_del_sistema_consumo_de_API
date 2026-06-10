@@ -1,11 +1,36 @@
-import type { StatsProps } from "../types/Task";
+import { useEffect, useState } from "react";
+import type { Task } from "../types/Task";
+import { getAllTasks } from "../Services/taskService";
 import "./Stats.css";
 
-export default function Stats({ tasks }: StatsProps) {
+export default function Stats() {
+  const [tasks, setTasks] = useState<Task[]>([]);
+  const [loading, setLoading] = useState(true);
+
+  useEffect(() => {
+    const fetchTasks = async () => {
+      try {
+        const data = await getAllTasks();
+        setTasks(data);
+      } catch (error) {
+        console.error("Error al cargar estadísticas:", error);
+      } finally {
+        setLoading(false);
+      }
+    };
+
+    fetchTasks();
+  }, []);
+
+  if (loading) {
+    return <p>Cargando estadísticas...</p>;
+  }
+
   const total = tasks.length;
   const completadas = tasks.filter((t) => t.completed).length;
   const pendientes = tasks.filter((t) => !t.completed).length;
-  const porcentaje = total > 0 ? Math.round((completadas / total) * 100) : 0;
+  const porcentaje =
+    total > 0 ? Math.round((completadas / total) * 100) : 0;
 
   const porPrioridad = {
     Alta: tasks.filter((t) => t.priority === "high").length,
@@ -25,10 +50,12 @@ export default function Stats({ tasks }: StatsProps) {
           <span className="big-number">{total}</span>
           <span className="big-label">Total de Tareas</span>
         </div>
+
         <div className="stat-big green">
           <span className="big-number">{completadas}</span>
           <span className="big-label">Completadas</span>
         </div>
+
         <div className="stat-big blue">
           <span className="big-number">{pendientes}</span>
           <span className="big-label">Pendientes</span>
@@ -40,12 +67,14 @@ export default function Stats({ tasks }: StatsProps) {
           <span>Progreso general</span>
           <span className="progress-pct">{porcentaje}%</span>
         </div>
+
         <div className="progress-bar-bg">
           <div
             className="progress-bar-fill"
             style={{ width: `${porcentaje}%` }}
           />
         </div>
+
         <p className="progress-msg">
           {porcentaje === 100
             ? "¡Completaste todas tus tareas!"
@@ -59,20 +88,24 @@ export default function Stats({ tasks }: StatsProps) {
 
       <div className="priority-section">
         <h2 className="section-title">Por Prioridad</h2>
+
         <div className="priority-bars">
           {(["Alta", "Media", "Baja"] as const).map((p) => (
             <div className="pbar-row" key={p}>
-              <span className="pbar-label">
-                {p === "Alta" ? "" : p === "Media" ? "" : ""} {p}
-              </span>
+              <span className="pbar-label">{p}</span>
+
               <div className="pbar-track">
                 <div
                   className={`pbar-fill pbar-${p.toLowerCase()}`}
                   style={{
-                    width: total > 0 ? `${(porPrioridad[p] / total) * 100}%` : "0%",
+                    width:
+                      total > 0
+                        ? `${(porPrioridad[p] / total) * 100}%`
+                        : "0%",
                   }}
                 />
               </div>
+
               <span className="pbar-count">{porPrioridad[p]}</span>
             </div>
           ))}
